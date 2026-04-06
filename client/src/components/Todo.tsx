@@ -108,9 +108,9 @@ const Index = () => {
         <h1 className="text-3xl font-bold text-foreground">Todo App</h1>
       </div>
 
-      <div className="mx-auto space-y-6 grid grid-cols-8 gap-2 static">
+      <div className="mx-auto space-y-6 md:grid grid-cols-8 gap-2">
         {/* Add Form */}
-        <div className="sticky top-0 col-span-3">
+        <div className="col-span-3">
           <Card className="p-4 space-y-3 sticky! top-2">
             <Input
               placeholder="Title"
@@ -134,7 +134,7 @@ const Index = () => {
         {/* Search & Bulk Actions */}
         <div className="space-y-2 col-span-5">
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 sticky top-0 bg-background/80 backdrop-blur-sm z-10 px-1 py-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
