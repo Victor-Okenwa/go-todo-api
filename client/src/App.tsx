@@ -1,6 +1,5 @@
-import { Container } from "semantic-ui-react";
 import "./App.css";
-import TodoList from "./TodoList";
+import TodoList from "./components/Todo";
 
 
 function App() {
