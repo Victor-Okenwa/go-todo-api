@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"todo-server/internal/models"
 	"todo-server/internal/repository"
 )
@@ -27,7 +28,25 @@ func (h *TodoHandler) GetAllTodos(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(todo)
 }
 
+// Get By ID returns a single todo by ID
+func (h *TodoHandler) GetByID(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Id is required", http.StatusBadRequest)
+		return
+	}
 
+	todo, err := h.repo.GetByID(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusFound)
+	json.NewEncoder(w).Encode(todo)
+}
 
 // CreateTodo creates a new todo
 func (h *TodoHandler) CreateTodo(w http.ResponseWriter, r *http.Request) {
@@ -50,4 +69,57 @@ func (h *TodoHandler) CreateTodo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(created)
+}
+
+func (h *TodoHandler) UpdateTodo(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid id", http.StatusBadGateway)
+		return
+	}
+
+	var update models.Todo
+
+	if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	result, err := h.repo.Update(id, update)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(w).Encode(result)
+}
+
+// DELETE BY ID
+func (h *TodoHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid Id", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.repo.Delete(id); err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// DeleteAllTodos deletes all todos
+func (h *TodoHandler) DeleteAll(w http.ResponseWriter, r *http.Request) {
+	if err := h.repo.DeleteAll(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
