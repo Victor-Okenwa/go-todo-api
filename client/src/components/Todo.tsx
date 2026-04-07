@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,8 @@ import {
 
 
 import { Search, Trash2, Pencil, Eye, Plus, ClipboardList } from "lucide-react";
+import { create, getAll } from "@/api/todos";
+import { toast } from "sonner";
 
 interface Todo {
   id: string;
@@ -37,6 +39,7 @@ interface Todo {
 
 const Index = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  // const [isFetchingTodos, setIsFetchingTodos] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [search, setSearch] = useState("");
@@ -44,6 +47,15 @@ const Index = () => {
   const [editTodo, setEditTodo] = useState<Todo | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
+
+  // useEffect(() => {
+  //   getAll().then((res)=> {
+  //     const 
+  //     setTodos
+  //   }).catch((err) => {
+  //     console.error("Failed to fetch todos:", err);
+  //   });
+  // }, [setTodos]);
 
   const filteredTodos = useMemo(() => {
     const q = search.toLowerCase();
@@ -55,19 +67,28 @@ const Index = () => {
     );
   }, [todos, search]);
 
-  const addTodo = () => {
+  const addTodo = async () => {
     if (!title.trim()) return;
-    setTodos((prev) => [
-      {
-        id: crypto.randomUUID(),
-        title: title.trim(),
-        description: description.trim(),
-        completed: false,
-      },
-      ...prev,
-    ]);
-    setTitle("");
-    setDescription("");
+
+    await create(title, description).then((res) => {
+      console.log(res.json())
+      toast.success("Created")
+    }).catch((err) => {
+      console.log(err)
+      toast.error(err.message ?? "FAILED TO CREATE")
+    })
+
+    // setTodos((prev) => [
+    // {
+    // id: crypto.randomUUID(),
+    // title: title.trim(),
+    // description: description.trim(),
+    // completed: false,
+    // },
+    // ...prev,
+    // ]);
+    // setTitle("");
+    // setDescription("");
   };
 
   const toggleTodo = (id: string) => {

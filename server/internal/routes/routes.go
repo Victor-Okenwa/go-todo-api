@@ -3,10 +3,15 @@ package routes
 import (
 	"encoding/json"
 	"net/http"
+	"todo-server/internal/handlers"
+	"todo-server/internal/repository"
 )
 
 func SetupRoutes() *http.ServeMux {
 	mux := http.NewServeMux()
+
+	repo := repository.NewMemoryRepository()
+	todoHandlers := handlers.NewTodoHandler(repo)
 
 	// Root Route
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
@@ -31,18 +36,13 @@ func SetupRoutes() *http.ServeMux {
 		json.NewEncoder(w).Encode(response)
 	})
 
-	// todos route (placeholder)
-	mux.HandleFunc("GET /todos", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]any{
-			"message": "This is where your todos would be returned.",
-			"count":   0,
-			"todos":   []string{},
-		})
-	})
+	// Todo Routes
+	mux.HandleFunc("GET /todos", todoHandlers.GetAllTodos)
+	mux.HandleFunc("GET /todos/{id}", todoHandlers.GetByID)
+	mux.HandleFunc("POST /todos", todoHandlers.CreateTodo)
+	mux.HandleFunc("PUT /todos/{id}", todoHandlers.UpdateTodo)
+	mux.HandleFunc("DELETE /todos/{id}", todoHandlers.Delete)
+	mux.HandleFunc("DELETE /todos", todoHandlers.DeleteAll)
 
-	// Apply middleware (CORS + Logging)
-	// Note: Middleware order matters - Logging outermost, CORS inner
 	return mux
 }

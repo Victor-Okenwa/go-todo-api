@@ -33,11 +33,16 @@ func main() {
 		IdleTimeout:  6 * time.Second,
 	}
 
-	fmt.Printf("🚀 Go Todo API server starting on http://localhost%s\n", port)
+	fmt.Printf("🚀 Go Todo API started on http://localhost%s\n", port)
 	fmt.Println("Available routes:")
-	fmt.Println("   GET /          → Welcome message")
-	fmt.Println("   GET /health    → Health check")
-	fmt.Println("   GET /todos     → Todo list (placeholder)")
+	fmt.Println("   GET  /")
+	fmt.Println("   GET  /health")
+	fmt.Println("   GET  /todos")
+	fmt.Println("   POST /todos")
+	fmt.Println("   GET  /todos/{id}")
+	fmt.Println("   PUT  /todos/{id}")
+	fmt.Println("   DELETE /todos/{id}")
+	fmt.Println("   DELETE /todos")
 
 	log.Fatalln(server.ListenAndServe())
 }
