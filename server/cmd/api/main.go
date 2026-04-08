@@ -41,6 +41,7 @@ func main() {
 	fmt.Println("   POST /todos")
 	fmt.Println("   GET  /todos/{id}")
 	fmt.Println("   PUT  /todos/{id}")
+	fmt.Println("   PATCH  /todos/{id}")
 	fmt.Println("   DELETE /todos/{id}")
 	fmt.Println("   DELETE /todos")
 

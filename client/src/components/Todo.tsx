@@ -27,7 +27,7 @@ import {
 
 
 import { Search, Trash2, Pencil, Eye, Plus, ClipboardList } from "lucide-react";
-import { create, getAll, update } from "@/api/todos";
+import { create, getAll, update, deleteByID, deleteAll as deleteAllTodos, updateCompleted } from "@/api/todos";
 import { toast } from "sonner";
 
 interface Todo {
@@ -85,6 +85,7 @@ const Index = () => {
       ]);
       setTitle("");
       setDescription("");
+      toast.success("Todo created!")
     }).catch((err) => {
       console.log(err)
       toast.error(err.message ?? "FAILED TO CREATE")
@@ -92,18 +93,35 @@ const Index = () => {
 
   };
 
-  const toggleTodo = (id: string) => {
-
-    setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
-    );
+  const toggleTodo = async (id: string) => {
+    await updateCompleted(id, !todos.find((t) => t.id === id)?.completed).then(() => {
+      toast.success("Todo updated!")
+      setTodos((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
+      );
+    }).catch((err) => {
+      console.log(err)
+      toast.error(err.message ?? "FAILED TO UPDATE")
+    })
   };
 
-  const deleteTodo = (id: string) => {
-    setTodos((prev) => prev.filter((t) => t.id !== id));
+  const deleteTodo = async (id: string) => {
+    await deleteByID(Number(id)).then(() => {
+      setTodos((prev) => prev.filter((t) => t.id !== id));
+      toast.success("Todo deleted!")
+    }).catch((err) => {
+      console.log(err)
+      toast.error(err.message ?? "FAILED TO DELETE")
+    })
   };
 
-  const deleteAll = () => setTodos([]);
+  const deleteAll = async () => {
+    await deleteAllTodos().then(() => {
+      setTodos([])
+      toast.success("Cleared all")
+    }).catch((err) => toast.error(err || "Something went wrong"))
+
+  };
 
   const openEdit = (todo: Todo) => {
     setEditTodo(todo);
@@ -117,16 +135,7 @@ const Index = () => {
     setIsEditingTodo(true);
     try {
       const res = await update(editTodo.id, editTitle.trim(), editDescription.trim(), editTodo.completed);
-
       console.log("Updated todo:", res);
-
-      // setTodos((prev) =>
-      // prev.map((t) =>
-      // t.id === editTodo.id
-      // ? { ...t, title: res.title.trim(), description: res.description.trim() }
-      // : t
-      // )
-      // );
     } catch (err) {
       console.error("Failed to fetch todos:", err);
     } finally {

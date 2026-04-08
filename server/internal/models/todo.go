@@ -38,3 +38,9 @@ func (t *Todo) Update(title, description string, completed bool) {
 	t.Completed = completed
 	t.UpdatedAt = time.Now()
 }
+
+// Update checked (completed)
+func (t *Todo) UpdateCompleted(completed bool) {
+	t.Completed = completed
+	t.UpdatedAt = time.Now()
+}

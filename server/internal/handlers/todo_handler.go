@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"todo-server/internal/models"
@@ -88,6 +87,32 @@ func (h *TodoHandler) UpdateTodo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result, err := h.repo.Update(id, update)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(w).Encode(result)
+}
+
+func (h *TodoHandler) UpdateChecked(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid id", http.StatusBadGateway)
+		return
+	}
+
+	var completed repository.CheckedState
+
+	if err := json.NewDecoder(r.Body).Decode(&completed); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	result, err := h.repo.UpdateCompleted(id, completed)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return

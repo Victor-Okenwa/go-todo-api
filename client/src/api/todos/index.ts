@@ -46,11 +46,33 @@ export async function update(id: string | number, title: string, description: st
     });
 }
 
+export async function updateCompleted(id: string | number, completed: boolean) {
+    await fetch(`${API_ORIGIN}/todos/${id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ completed })
+    }).then(res => res.json()).catch(err => {
+        console.error(`Error updating todo with id ${id}:`, err);
+        throw err;
+    });
+}
+
 export async function deleteByID(id: number) {
     await fetch(`${API_ORIGIN}/todos/${id}`, {
         method: "DELETE"
     }).catch(err => {
         console.error(`Error deleting todo with id ${id}:`, err);
+        throw err;
+    });
+}
+
+export async function deleteAll() {
+    await fetch(`${API_ORIGIN}/todos`, {
+        method: "DELETE"
+    }).catch(err => {
+        console.error(`Error deleting all todos`, err);
         throw err;
     });
 }

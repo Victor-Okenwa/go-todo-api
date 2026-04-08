@@ -60,7 +60,27 @@ func (r *memoryRepository) Update(id int, updatedTodo models.Todo) (models.Todo,
 
 	for i, todo := range r.todos {
 		if todo.ID == id {
+
+			if updatedTodo.Title == "" {
+				address := &updatedTodo.Title
+				*address = todo.Title
+			}
 			r.todos[i].Update(updatedTodo.Title, updatedTodo.Description, updatedTodo.Completed)
+			return r.todos[i], nil
+		}
+	}
+
+	return models.Todo{}, errors.New("Todo Not Found")
+}
+
+func (r *memoryRepository) UpdateCompleted(id int, state CheckedState) (models.Todo, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	for i, todo := range r.todos {
+
+		if todo.ID == id {
+			r.todos[i].UpdateCompleted(state.Completed)
 			return r.todos[i], nil
 		}
 	}
