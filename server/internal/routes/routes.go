@@ -41,7 +41,7 @@ func SetupRoutes() *http.ServeMux {
 	mux.HandleFunc("GET /todos/{id}", todoHandlers.GetByID)
 	mux.HandleFunc("POST /todos", todoHandlers.CreateTodo)
 	mux.HandleFunc("PUT /todos/{id}", todoHandlers.UpdateTodo)
-	mux.HandleFunc("PATCH /todos/{id}", todoHandlers.UpdateChecked)
+	mux.HandleFunc("PATCH /todos/{id}", todoHandlers.UpdateCompleted)
 	mux.HandleFunc("DELETE /todos/{id}", todoHandlers.Delete)
 	mux.HandleFunc("DELETE /todos", todoHandlers.DeleteAll)
 

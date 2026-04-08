@@ -97,7 +97,7 @@ func (h *TodoHandler) UpdateTodo(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(result)
 }
 
-func (h *TodoHandler) UpdateChecked(w http.ResponseWriter, r *http.Request) {
+func (h *TodoHandler) UpdateCompleted(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {

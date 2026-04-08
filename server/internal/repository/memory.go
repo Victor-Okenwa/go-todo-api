@@ -78,7 +78,6 @@ func (r *memoryRepository) UpdateCompleted(id int, state CheckedState) (models.T
 	defer r.mu.Unlock()
 
 	for i, todo := range r.todos {
-
 		if todo.ID == id {
 			r.todos[i].UpdateCompleted(state.Completed)
 			return r.todos[i], nil
