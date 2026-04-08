@@ -10,4 +10,3 @@ type TodoRepository interface {
 	Delete(id int) error
 	DeleteAll() error
 }
-

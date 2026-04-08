@@ -27,7 +27,7 @@ import {
 
 
 import { Search, Trash2, Pencil, Eye, Plus, ClipboardList } from "lucide-react";
-import { create, getAll } from "@/api/todos";
+import { create, getAll, update } from "@/api/todos";
 import { toast } from "sonner";
 
 interface Todo {
@@ -39,7 +39,8 @@ interface Todo {
 
 const Index = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  // const [isFetchingTodos, setIsFetchingTodos] = useState(false);
+  const [isFetchingTodos, setIsFetchingTodos] = useState(false);
+  const [isEditingTodo, setIsEditingTodo] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [search, setSearch] = useState("");
@@ -48,14 +49,20 @@ const Index = () => {
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
 
-  // useEffect(() => {
-  //   getAll().then((res)=> {
-  //     const 
-  //     setTodos
-  //   }).catch((err) => {
-  //     console.error("Failed to fetch todos:", err);
-  //   });
-  // }, [setTodos]);
+  useEffect(() => {
+    const fetchTodos = async () => {
+      setIsFetchingTodos(true);
+      try {
+        const res = await getAll();
+        setTodos(res);
+      } catch (err) {
+        console.error("Failed to fetch todos:", err);
+      } finally {
+        setIsFetchingTodos(false);
+      }
+    };
+    fetchTodos();
+  }, []);
 
   const filteredTodos = useMemo(() => {
     const q = search.toLowerCase();
@@ -71,27 +78,22 @@ const Index = () => {
     if (!title.trim()) return;
 
     await create(title, description).then((res) => {
-      console.log(res.json())
-      toast.success("Created")
+      console.log(res)
+      setTodos((prev) => [
+        res,
+        ...prev,
+      ]);
+      setTitle("");
+      setDescription("");
     }).catch((err) => {
       console.log(err)
       toast.error(err.message ?? "FAILED TO CREATE")
     })
 
-    // setTodos((prev) => [
-    // {
-    // id: crypto.randomUUID(),
-    // title: title.trim(),
-    // description: description.trim(),
-    // completed: false,
-    // },
-    // ...prev,
-    // ]);
-    // setTitle("");
-    // setDescription("");
   };
 
   const toggleTodo = (id: string) => {
+
     setTodos((prev) =>
       prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
     );
@@ -109,8 +111,28 @@ const Index = () => {
     setEditDescription(todo.description);
   };
 
-  const saveEdit = () => {
+  const saveEdit = async () => {
     if (!editTodo || !editTitle.trim()) return;
+
+    setIsEditingTodo(true);
+    try {
+      const res = await update(editTodo.id, editTitle.trim(), editDescription.trim(), editTodo.completed);
+
+      console.log("Updated todo:", res);
+
+      // setTodos((prev) =>
+      // prev.map((t) =>
+      // t.id === editTodo.id
+      // ? { ...t, title: res.title.trim(), description: res.description.trim() }
+      // : t
+      // )
+      // );
+    } catch (err) {
+      console.error("Failed to fetch todos:", err);
+    } finally {
+      setIsEditingTodo(false);
+    }
+
     setTodos((prev) =>
       prev.map((t) =>
         t.id === editTodo.id
@@ -143,7 +165,7 @@ const Index = () => {
               placeholder="Description (optional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="min-h-[60px]"
+              className="min-h-15"
             />
             <Button onClick={addTodo} disabled={!title.trim()} className="w-full gap-2">
               <Plus className="h-4 w-4" /> Add Todo

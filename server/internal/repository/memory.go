@@ -50,6 +50,7 @@ func (r *memoryRepository) Create(todo models.Todo) (models.Todo, error) {
 	todo.ID = r.nextID
 	r.nextID++
 	r.todos = append(r.todos, todo)
+
 	return todo, nil
 }
 

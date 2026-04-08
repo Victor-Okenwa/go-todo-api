@@ -27,13 +27,13 @@ export async function create(title: string, description: string = "") {
             "Content-Type": "application/json"
         },
         body: JSON.stringify(newTodo)
-    }).then(res => res.json()).catch(err => {
+    }).then((res) => res.json()).catch(err => {
         console.error("Error creating todo:", err);
         throw err;
     });
 }
 
-export async function update(id: number, title: string, description: string, completed: boolean) {
+export async function update(id: string | number, title: string, description: string, completed: boolean) {
     await fetch(`${API_ORIGIN}/todos/${id}`, {
         method: "PUT",
         headers: {
