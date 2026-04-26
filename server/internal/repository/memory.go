@@ -60,7 +60,6 @@ func (r *memoryRepository) Update(id int, updatedTodo models.Todo) (models.Todo,
 
 	for i, todo := range r.todos {
 		if todo.ID == id {
-
 			if updatedTodo.Title == "" {
 				address := &updatedTodo.Title
 				*address = todo.Title
