@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"time"
-	"todo-server/internal/config"
+	"todo-server/config"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
