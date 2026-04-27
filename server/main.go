@@ -73,8 +73,6 @@ func main() {
 	fmt.Println("Using PostgreSQL + In-Memory Cache")
 
 	log.Printf("Server starting on port %s", port)
-	log.Fatal(http.ListenAndServe(":"+port, handler))
-
 	log.Fatal(server.ListenAndServe())
 }
 
