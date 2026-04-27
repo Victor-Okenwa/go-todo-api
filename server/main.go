@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"log"
 	"net/http"
@@ -12,6 +13,9 @@ import (
 	"todo-server/internal/repository"
 	"todo-server/internal/routes"
 )
+
+//go:embed migrations/*.sql
+var migrationFiles embed.FS
 
 // Simple response structure (like a DTO in TypeScript)
 type HealthResponse struct {
@@ -36,7 +40,7 @@ func main() {
 	defer db.Close()
 
 	// Run Migrations
-	if err := database.RunMigrations(db); err != nil {
+	if err := database.RunMigrations(db, migrationFiles); err != nil {
 		log.Fatalf("Failed to run database migrations: %v", err)
 	}
 

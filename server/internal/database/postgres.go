@@ -6,7 +6,6 @@ import (
 	"log"
 	"time"
 	"todo-server/config"
-
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 

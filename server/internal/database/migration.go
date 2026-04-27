@@ -2,25 +2,25 @@ package database
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"log"
-	"os"
 )
 
-func RunMigrations(db *DB) error {
-	migrationSQL, error := os.ReadFile("../../migrations/001_create_todos_table.sql")
-
-	if error != nil {
-		return fmt.Errorf("failed to read migration file: %w", error)
+func RunMigrations(db *DB, migrationFiles embed.FS) error {
+	// Read the migration files from the embedded filesystem
+	sqlBytes, err := migrationFiles.ReadFile("migrations/001_create_todos_table.sql")
+	if err != nil {
+		return fmt.Errorf("failed to read embedded migration file: %w", err)
 	}
 
 	ctx := context.Background()
+	_, err = db.Pool.Exec(ctx, string(sqlBytes))
 
-	_, error = db.Pool.Exec(ctx, string(migrationSQL))
-	if error != nil {
-		return fmt.Errorf("failed to run migration: %w", error)
+	if err != nil {
+		return fmt.Errorf("failed to execute migration: %w", err)
 	}
 
-	log.Println("✅ Database migration completed successfully")
+	log.Println("✅ Database migration completed successfully (table 'todos' is ready)")
 	return nil
 }

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS todos (
     completed BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-)
+);
 
 -- Index for faster lookups
 CREATE INDEX IF NOT EXISTS idx_todos_completed ON todos(completed);

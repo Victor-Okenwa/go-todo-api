@@ -63,7 +63,7 @@ func (r *postgresRepository) Create(todo models.Todo) (models.Todo, error) {
 	query := `INSERT INTO todos (title, description, completed) 
 	          VALUES ($1, $2, $3) RETURNING id, created_at, updated_at`
 
-	err := r.db.Pool.QueryRow(ctx, query, todo.Title, todo.Description, todo.Completed).Scan(&todo.ID, &todo.Title, &todo.Description, &todo.CreatedAt, &todo.UpdatedAt)
+	err := r.db.Pool.QueryRow(ctx, query, todo.Title, todo.Description, todo.Completed).Scan(&todo.ID, &todo.CreatedAt, &todo.UpdatedAt)
 	if err != nil {
 		return models.Todo{}, err
 	}

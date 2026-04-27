@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"todo-server/internal/models"
 	"todo-server/internal/repository"
 )
@@ -56,12 +58,17 @@ func (h *TodoHandler) CreateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Basic validation
+	if strings.TrimSpace(todo.Title) == "" {
+		http.Error(w, "Title is required", http.StatusBadRequest)
+		return
+	}
 	// Use NewTodo to ensure proper defaults
 	newTodo := models.NewTodo(todo.Title, todo.Description)
-
 	created, err := h.repo.Create(newTodo)
 
 	if err != nil {
+		log.Printf("ERROR creating todo: %v", err)
 		http.Error(w, "Failed to create todo", http.StatusInternalServerError)
 		return
 	}
