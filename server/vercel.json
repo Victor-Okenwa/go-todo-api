@@ -1,0 +1,22 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "builds": [
+    {
+      "src": "main.go",
+      "use": "@vercel/go"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/main.go"
+    }
+  ],
+  "functions": {
+    "main.go": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  }
+}
