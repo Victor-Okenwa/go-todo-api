@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 	"todo-server/config"
 	"todo-server/internal/database"
@@ -59,7 +60,12 @@ func main() {
 		middleware.CORSMiddleware(mux),
 	)
 
-	port := cfg.ServerPort
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = ":9000" // fallback for local development
+	}
+
 	server := &http.Server{
 		Addr:         port,
 		Handler:      handler,
