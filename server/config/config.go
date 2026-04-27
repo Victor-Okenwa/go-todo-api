@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 )
@@ -10,6 +9,10 @@ type Config struct {
 	ServerPort    string
 	Environment   string
 	AllowedOrigin string
+
+	// Database - Support two modes
+	UseSupabase        bool
+	DBConnectionString string // Full postgres:// URL (for Supabase or local)
 
 	// Database
 	DBHost     string
@@ -20,25 +23,29 @@ type Config struct {
 }
 
 func LoadConfig() (*Config, error) {
-	dbPortStr := getEnv("DB_PORT", "5434")
-
-	dbPort, error := strconv.Atoi(dbPortStr)
-
-	if error != nil {
-		return nil, fmt.Errorf("Invalid DB_PORT: %w: ", error)
-	}
+	env := getEnv("ENVIRONMENT", "development")
 
 	cfg := &Config{
 		ServerPort:    getEnv("SERVER_PORT", ":9000"),
-		Environment:   getEnv("ENVIRONMENT", "development"),
+		Environment:   env,
 		AllowedOrigin: getEnv("ALLOWED_ORIGIN", "http://localhost:5173"),
-
-		DBHost:     getEnv("DB_HOST", "localhost"),
-		DBPort:     dbPort,
-		DBName:     getEnv("DB_NAME", "todo_db"),
-		DBUser:     getEnv("DB_USER", "todo_user"),
-		DBPassword: getEnv("DB_PASSWORD", "todo_password"),
 	}
+
+	// Check if we should use Supabase connection string (preferred for prod)
+	if dsn := os.Getenv("DB_CONNECTION_STRING"); dsn != "" {
+		cfg.UseSupabase = true
+		cfg.DBConnectionString = dsn
+	} else {
+		// Fallback to local Docker Postgres
+		cfg.UseSupabase = false
+		dbPort, _ := strconv.Atoi(getEnv("DB_PORT", "5434"))
+		cfg.DBHost = getEnv("DB_HOST", "localhost")
+		cfg.DBPort = dbPort
+		cfg.DBName = getEnv("DB_NAME", "todo_db")
+		cfg.DBUser = getEnv("DB_USER", "todo_user")
+		cfg.DBPassword = getEnv("DB_PASSWORD", "todo_password")
+	}
+
 	return cfg, nil
 }
 
