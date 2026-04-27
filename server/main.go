@@ -66,8 +66,13 @@ func main() {
 		port = ":9000" // fallback for local development
 	}
 
+	// Remove any leading ":" if it exists
+	if port[0] == ':' {
+		port = port[1:]
+	}
+
 	server := &http.Server{
-		Addr:         port,
+		Addr:         ":" + port,
 		Handler:      handler,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
