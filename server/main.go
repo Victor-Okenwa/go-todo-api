@@ -72,6 +72,9 @@ func main() {
 	fmt.Printf("Environment: %s | DB Port: %d | Cache: Enabled\n", cfg.Environment, cfg.DBPort)
 	fmt.Println("Using PostgreSQL + In-Memory Cache")
 
+	log.Printf("Server starting on port %s", port)
+	log.Fatal(http.ListenAndServe(":"+port, handler))
+
 	log.Fatal(server.ListenAndServe())
 }
 

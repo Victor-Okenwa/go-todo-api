@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 	"todo-server/config"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -15,7 +16,13 @@ type DB struct {
 
 // NewPostgresDB creates a new PostgreSQL connection pool
 func NewPostgresDB(cfg *config.Config) (*DB, error) {
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName)
+	var dsn string
+
+	if cfg.UseSupabase {
+		dsn = cfg.DBConnectionString
+	} else {
+		dsn = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName)
+	}
 
 	// Connection pool config
 	poolConfig, error := pgxpool.ParseConfig(dsn)
