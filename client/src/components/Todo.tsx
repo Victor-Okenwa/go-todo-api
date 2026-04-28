@@ -57,7 +57,7 @@ const Index = () => {
       setIsFetchingTodos(true);
       try {
         const res = await getAll();
-        setTodos(res);
+        setTodos(res || []);
       } catch (err) {
         console.error("Failed to fetch todos:", err);
       } finally {
@@ -208,7 +208,7 @@ const Index = () => {
                     className="pl-9"
                   />
                 </div>
-                {todos.length > 0 && (
+                {(todos && todos.length > 0) && (
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="destructive" size="sm" className="gap-1 shrink-0">
@@ -233,14 +233,14 @@ const Index = () => {
 
               {/* Todo List */}
               <div className="space-y-2">
-                {filteredTodos.length === 0 && (
+                {!filteredTodos || filteredTodos.length === 0 && (
                   <div className="py-12 text-center text-muted-foreground">
                     {todos.length === 0
                       ? "No todos yet. Add one above!"
                       : "No todos match your search."}
                   </div>
                 )}
-                {filteredTodos.map((todo) => (
+                {filteredTodos && filteredTodos.map((todo) => (
                   <Card
                     key={todo.id}
                     className={`p-4 flex items-start gap-3 transition-opacity ${todo.completed ? "opacity-60" : ""

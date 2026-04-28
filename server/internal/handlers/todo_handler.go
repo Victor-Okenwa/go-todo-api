@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -92,6 +93,8 @@ func (h *TodoHandler) UpdateTodo(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
+
+	fmt.Printf("Received update for ID %d: %+v\n", id, update)
 
 	result, err := h.repo.Update(id, update)
 	if err != nil {

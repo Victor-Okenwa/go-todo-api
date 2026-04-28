@@ -78,7 +78,7 @@ func (r *postgresRepository) Update(id int, updatedTodo models.Todo) (models.Tod
 
 	var t models.Todo
 
-	err := r.db.Pool.QueryRow(ctx, query, updatedTodo.Title, updatedTodo.Description, updatedTodo.Completed).Scan(&t.ID, &t.Title, &t.Description, &t.Completed, &t.CreatedAt, &t.UpdatedAt)
+	err := r.db.Pool.QueryRow(ctx, query, updatedTodo.Title, updatedTodo.Description, updatedTodo.Completed, id).Scan(&t.ID, &t.Title, &t.Description, &t.Completed, &t.CreatedAt, &t.UpdatedAt)
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
